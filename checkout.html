@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#030504" />
+    <meta name="description" content="Resumo do pedido Monster Energy." />
+    <title>Checkout — Monster Energy</title>
+    <link rel="stylesheet" href="./checkout.css" />
+  </head>
+  <body>
+    <main class="checkout-shell">
+      <header>
+        <a href="./index.html" class="back">← Voltar</a>
+        <span class="wordmark" role="img" aria-label="Monster Energy"><span class="checkout-logo" aria-hidden="true"></span></span>
+        <span class="step">CHECKOUT / 01</span>
+      </header>
+
+      <section class="checkout-card" aria-labelledby="checkout-title">
+        <div class="checkout-intro">
+          <span class="eyebrow">Seu pedido</span>
+          <h1 id="checkout-title">Energia<br />selecionada.</h1>
+          <p>Revise o produto e a quantidade antes de continuar.</p>
+        </div>
+
+        <div class="order-summary">
+          <span class="demo-label">Checkout demonstrativo</span>
+          <div class="product-line">
+            <div>
+              <span class="product-index">01</span>
+              <h2 id="product-name"></h2>
+              <p id="product-detail"></p>
+            </div>
+            <strong id="unit-price"></strong>
+          </div>
+
+          <div class="quantity-row">
+            <span>Quantidade</span>
+            <div class="quantity-control">
+              <button id="decrease" type="button" aria-label="Diminuir quantidade">−</button>
+              <output id="quantity" aria-live="polite">1</output>
+              <button id="increase" type="button" aria-label="Aumentar quantidade">+</button>
+            </div>
+          </div>
+
+          <div class="total-row">
+            <span>Total</span>
+            <strong id="total-price"></strong>
+          </div>
+
+          <button class="continue-button" id="continue-button" type="button">Continuar para pagamento <span>→</span></button>
+          <p class="checkout-status" id="checkout-status" aria-live="polite">Nenhuma cobrança será realizada nesta demonstração.</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="./flavors.js"></script>
+    <script src="./checkout.js"></script>
+  </body>
+</html>
