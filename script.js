@@ -51,7 +51,6 @@ function initializeShowcase() {
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const elements = {
     root: document.documentElement,
-    track: document.querySelector("#scroll-track"),
     video: document.querySelector("#hero-video"),
     videoStatus: document.querySelector("#video-status"),
     progress: document.querySelector("#video-progress-bar"),
@@ -73,9 +72,6 @@ function initializeShowcase() {
   let pointerStartX = null;
   let pointerCurrentX = null;
   let pendingSeekIndex = null;
-  let scrollFrameRequested = false;
-  let isScrollScrubbing = false;
-  let resumePlaybackTimer = null;
 
   function setPalette(flavor) {
     elements.root.style.setProperty("--background", flavor.palette.background);
@@ -121,50 +117,19 @@ function initializeShowcase() {
   function seekToFlavor(index) {
     const nextIndex = (index + flavors.length) % flavors.length;
     renderFlavor(nextIndex);
-    const maxScroll = Math.max(1, elements.track.offsetHeight - window.innerHeight);
     const segmentCenter = (nextIndex + .5) / flavors.length;
-    window.scrollTo({
-      top: elements.track.offsetTop + maxScroll * segmentCenter,
-      behavior: reducedMotion.matches ? "auto" : "smooth",
-    });
+    if (Number.isFinite(elements.video.duration)) {
+      elements.video.currentTime = elements.video.duration * segmentCenter;
+    }
     pendingSeekIndex = Number.isFinite(elements.video.duration) ? null : nextIndex;
   }
 
-  function syncVideoWithScroll() {
-    const maxScroll = Math.max(1, elements.track.offsetHeight - window.innerHeight);
-    const progress = Math.max(0, Math.min(1, (window.scrollY - elements.track.offsetTop) / maxScroll));
-    elements.progress.style.transform = `scaleX(${progress})`;
-    renderFlavor(Math.min(flavors.length - 1, Math.floor(progress * flavors.length)), false);
-    elements.videoStatus.textContent = `Scroll ${Math.round(progress * 100)}%`;
-
-    if (Number.isFinite(elements.video.duration) && elements.video.duration > 0) {
-      isScrollScrubbing = true;
-      elements.video.pause();
-      const targetTime = progress * Math.max(0, elements.video.duration - .04);
-      if (Math.abs(elements.video.currentTime - targetTime) > .025) elements.video.currentTime = targetTime;
-      window.clearTimeout(resumePlaybackTimer);
-      resumePlaybackTimer = window.setTimeout(() => {
-        isScrollScrubbing = false;
-        if (!reducedMotion.matches) elements.video.play().catch(() => {});
-      }, 180);
-    }
-  }
-
   function syncInterfaceWithPlayback() {
-    if (isScrollScrubbing || !Number.isFinite(elements.video.duration) || elements.video.duration <= 0) return;
+    if (!Number.isFinite(elements.video.duration) || elements.video.duration <= 0) return;
     const progress = elements.video.currentTime / elements.video.duration;
     elements.progress.style.transform = `scaleX(${Math.max(0, Math.min(1, progress))})`;
     renderFlavor(Math.min(flavors.length - 1, Math.floor(progress * flavors.length)), false);
     elements.videoStatus.textContent = "Em reprodução";
-  }
-
-  function requestScrollSync() {
-    if (scrollFrameRequested) return;
-    scrollFrameRequested = true;
-    requestAnimationFrame(() => {
-      syncVideoWithScroll();
-      scrollFrameRequested = false;
-    });
   }
 
   function createTabs() {
@@ -224,8 +189,6 @@ function initializeShowcase() {
     if (event.key === "ArrowRight") seekToFlavor(activeIndex + 1);
     if (event.key === "ArrowLeft") seekToFlavor(activeIndex - 1);
   });
-  window.addEventListener("scroll", requestScrollSync, { passive: true });
-  window.addEventListener("resize", requestScrollSync);
 
   createTabs();
   createParticles();
