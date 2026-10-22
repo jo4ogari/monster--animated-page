@@ -10,4 +10,7 @@ Por fim, o layout foi adaptado para diferentes tamanhos de tela e recebeu anima�
 
 ![Página principal da experiência Monster Energy](./home.png)
 
+![Mais Produtos Monster Energy](./produtos.png)
+
 ![Checkout demonstrativo Monster Energy](./checkout.png)
+
